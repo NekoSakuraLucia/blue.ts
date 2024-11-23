@@ -7,21 +7,21 @@ class PlayerEvent {
     /**
      * Player instance
      */
-    private player: any;
+    private player: Player;
     /**
      * Constructor
      */
-    constructor(player: any) {
+    constructor(player: Player) {
         this.player = player;
     }
 
     /**
      * Handle TrackStart event
      */
-    public TrackStartEvent(player: any, track: any, payload: any): unknown | void {
+    public TrackStartEvent(player: Player, track: any, payload: any): unknown | void {
 
         if (!player) return null;
-        
+
         this.player.playing = true;
 
         this.player.paused = false;
@@ -33,7 +33,7 @@ class PlayerEvent {
     /**
      * Handle TrackEnd event
      */
-    public TrackEndEvent(player: any, track: any, payload: any): unknown | void | Player {
+    public TrackEndEvent(player: Player, track: any, payload: any): unknown | void | Player {
 
         if (!player) return null;
 
@@ -83,7 +83,7 @@ class PlayerEvent {
     /**
      * Handle TrackStuck event
      */
-    public TrackStuckEvent(player: any, track: any, payload: any): unknown | void {
+    public TrackStuckEvent(player: Player, track: any, payload: any): unknown | void {
 
         this.player.playing = false;
 
@@ -95,7 +95,7 @@ class PlayerEvent {
     /**
      * Handle TrackException event
      */
-    public TrackExceptionEvent(player: any, track: any, payload: any): unknown | void {
+    public TrackExceptionEvent(player: Player, track: any, payload: any): unknown | void {
 
         this.player.playing = false;
 
@@ -107,14 +107,18 @@ class PlayerEvent {
     /**
      * Handle WebSocketClosed event
      */
-    public WebSocketClosedEvent(player: any, payload: any): void {
+    public WebSocketClosedEvent(player: Player, payload: { code: number }): void {
 
-        [4015, 4009].includes(payload.code) && this.player.send({
-                guild_id: this.player.guildId,
-                channel_id: this.player.voiceChannel,
-                self_mute: this.player.options?.selfMute || false,
-                self_deaf: this.player.options?.selfDeaf || false,
-            });
+        if ([4015, 4009].includes(payload.code)) {
+            if (this.player.send) {
+                this.player.send({
+                    guild_id: this.player.guildId,
+                    channel_id: this.player.voiceChannel,
+                    self_mute: this.player.options?.selfMute || false,
+                    self_deaf: this.player.options?.selfDeaf || false,
+                });
+            }
+        }
 
         this.player.blue.emit(Events.playerDisconnect, player, payload);
     }

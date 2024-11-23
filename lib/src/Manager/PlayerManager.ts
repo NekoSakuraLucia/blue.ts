@@ -6,6 +6,17 @@ import Track from "../Structure/Track";
 import Types from "../Utils/Types";
 import { Blue } from "../Connectors/Node";
 import { Player as PlayerOption, VoiceConnection } from "../Blue";
+import {
+    KaraokeSettings,
+    DistortionSettings,
+    RotationSettings,
+    TimeScaler,
+    BandConfiguration,
+    VibratoSettings,
+    LowPassFilter,
+    ChannelMixer,
+    TremoloSettings
+} from "./FilterManager";
 
 /**
  * Player Options interface
@@ -29,17 +40,17 @@ interface BlueStruct extends Blue {
  * Interface for Filter
  */
 export interface Filter extends Filters {
-     player: PlayerOption;
-     volume: number;
-     equalizer: any[];
-     karaoke: any;
-     tremolo: any;
-     vibrato: any;
-     rotation: any;
-     distortion: any;
-     channelMix: any;
-     lowPass: any;
-     timeScaler: any;
+    player: PlayerOption;
+    volume: number;
+    equalizer: BandConfiguration[];
+    karaoke: KaraokeSettings | null;
+    tremolo: TremoloSettings | null;
+    vibrato: VibratoSettings | null;
+    rotation: RotationSettings | null;
+    distortion: DistortionSettings | null;
+    channelMix: ChannelMixer | null;
+    lowPass: LowPassFilter | null;
+    timeScaler: TimeScaler | null;
 }
 
 /**
@@ -62,11 +73,11 @@ export interface PlayerEvent extends PlayerEvents {
  * Interface for Queue
  */
 export interface Queue extends QueueManager {
-     buffer: any[];
-     head: number;
-     tail: number;
-     previous: any | null;
-     current: any | null;
+    buffer: any[];
+    head: number;
+    tail: number;
+    previous: any | null;
+    current: any | null;
 }
 
 /**
@@ -145,22 +156,22 @@ class Player {
      * Play function
      */
     public async play(options: any = {}): Promise<this | void> {
-        
-        if(this.queue.isEmpty()) return this;
-        
+
+        if (this.queue.isEmpty()) return this;
+
         this.queue.current = this.queue.shift();
 
-        if(!this.queue.current?.info?.identifier) return this;
+        if (!this.queue.current?.info?.identifier) return this;
 
         const datas = this.queue.current;
-        
+
         await this.additionalSource(datas);
 
         try {
             this.playing = true;
             this.position = 0;
 
-            const volumeFactor = Math.cos(this.position / 1000); 
+            const volumeFactor = Math.cos(this.position / 1000);
             const adjustedVolume = Math.floor(this.volume * volumeFactor);
 
             await this.blue.node.rest.updatePlayer({
@@ -183,12 +194,12 @@ class Player {
      */
     private async search(): Promise<Track | unknown> {
         let data = await this.blue.search({ query: `${this.queue.current.info.title} ${this.queue.current.info.author}`, source: "youtube music" }).catch(() => null);
-        if(!data || !data.tracks?.length || [Types.LOAD_ERROR, Types.LOAD_EMPTY].includes(data.loadType)) return null;
+        if (!data || !data.tracks?.length || [Types.LOAD_ERROR, Types.LOAD_EMPTY].includes(data.loadType)) return null;
         return data.tracks[0];
     }
 
     private async additionalSource(datas: Track): Promise<void> {
-        if(this.queue.current?.type && this.queue.current?.info?.sourceName && ["album_track", "recommend_track", "playlist_track"].includes(this.queue.current.type) && this.blue.util.platforms[this.queue.current.info.sourceName.toLowerCase()]){
+        if (this.queue.current?.type && this.queue.current?.info?.sourceName && ["album_track", "recommend_track", "playlist_track"].includes(this.queue.current.type) && this.blue.util.platforms[this.queue.current.info.sourceName.toLowerCase()]) {
             this.queue.current = await this.search();
             await this.updateTrackInfo(datas);
         }
@@ -218,10 +229,10 @@ class Player {
      * Update track info function
      */
     public updateTrackInfo(datas: Track): void {
-            this.queue.current.info.sourceName = datas.info.sourceName;
-            this.queue.current.info.isrc = datas.info.isrc;
-            this.queue.current.type = datas.type;
-            this.queue.current.info.uri = datas.info.uri;
+        this.queue.current.info.sourceName = datas.info.sourceName;
+        this.queue.current.info.isrc = datas.info.isrc;
+        this.queue.current.type = datas.type;
+        this.queue.current.info.uri = datas.info.uri;
     }
 
     /**
@@ -289,7 +300,7 @@ class Player {
      * Set loop function
      */
     public setLoop(query: Loop): this {
-        if(!query || !["queue", "track", "none"].includes(query.toLowerCase())) 
+        if (!query || !["queue", "track", "none"].includes(query.toLowerCase()))
             this.loop = "none";
         else
             this.loop = query.toLowerCase() as Loop;
@@ -300,7 +311,7 @@ class Player {
      * Set voice channel function
      */
     public setVoiceChannel(channel: string, options: VoiceConnection): this | TypeError {
-        if(typeof channel !== "string") throw new TypeError(`'channel' must be contain only channel id.`);
+        if (typeof channel !== "string") throw new TypeError(`'channel' must be contain only channel id.`);
         if (!this.isConnected())
             throw new ReferenceError(`Im not connected to the voice channel.`);
 
@@ -318,7 +329,7 @@ class Player {
      * Set text channel function
      */
     public setTextChannel(channel: string): this | TypeError {
-        if(typeof channel !== "string") throw new TypeError(`'channel' must be contain only channel id.`);
+        if (typeof channel !== "string") throw new TypeError(`'channel' must be contain only channel id.`);
         this.textChannel = channel;
         return this;
     }
@@ -342,12 +353,12 @@ class Player {
      * Seek function
      */
     public seek(position: string | number): this | RangeError {
-        if(typeof position === "string") {
+        if (typeof position === "string") {
             position = parseInt(position);
-            if(Number.isNaN(position)) 
-             throw new RangeError("blue.ts :: Invalid position format");
+            if (Number.isNaN(position))
+                throw new RangeError("blue.ts :: Invalid position format");
         }
-        if(position < 0) position = 0;
+        if (position < 0) position = 0;
         let ms = this.blue.util.durationInMs(position);
         const pos = Math.abs(ms);
         if (ms < 0) {
@@ -366,19 +377,19 @@ class Player {
      */
     public async reconnect(): Promise<this> {
         if (!this.queue.current && this.queue.isEmpty()) return this;
-       await this.blue.node.rest.updatePlayer({
-          guildId: this.guildId,
-          data: {
-            position: this.position,
-            track: this.rawTrackBuild(this.queue.current),
-          },
+        await this.blue.node.rest.updatePlayer({
+            guildId: this.guildId,
+            data: {
+                position: this.position,
+                track: this.rawTrackBuild(this.queue.current),
+            },
         });
-    
+
         return this
-      };
+    };
 
     private rawTrackBuild(track: any): any {
-        if(track.encoded) {
+        if (track.encoded) {
             return {
                 encoded: track.encoded,
                 info: {
@@ -403,16 +414,16 @@ class Player {
      */
     public async autoplay(): Promise<this | Error> {
         try {
-            if(!this.queue.previous?.info?.identifier && !this.queue.current?.info?.identifier) throw new Error("Could not search for autoplay tracks.")
-            if(!["ytsearch", "ytmsearch", "youtube", "youtube music"].includes(this.blue.load.source)) return this.rawAutoplay();
-            
+            if (!this.queue.previous?.info?.identifier && !this.queue.current?.info?.identifier) throw new Error("Could not search for autoplay tracks.")
+            if (!["ytsearch", "ytmsearch", "youtube", "youtube music"].includes(this.blue.load.source)) return this.rawAutoplay();
+
             const data = `https://www.youtube.com/watch?v=${this.queue.previous?.info?.identifier || this.queue.current?.info?.identifier}&list=RD${this.queue.previous.info.identifier || this.queue.current.info.identifier}`;
 
             const response = await this.blue.search({ query: data }).catch(() => null);
             if (!response || !response.tracks?.length) return this.rawAutoplay();
 
             response.tracks.shift();
-            
+
             const track = response.tracks[
                 Math.floor(Math.random() * Math.floor(response.tracks.length))
             ];
@@ -434,18 +445,18 @@ class Player {
         try {
             const search: Track | any = await this.blue.load.spotify.search(this.queue.current?.info?.title || this.queue.previous?.info?.title).catch(() => null);
 
-            if(!search) throw new Error("Track not found, for autoplay.");
+            if (!search) throw new Error("Track not found, for autoplay.");
 
             const res = await this.blue.load.spotify.getRecommendations(search?.info?.identifier).catch(() => null);
 
-            if(!res || !res.data?.tracks || !res.data.tracks.length) throw new Error("Track not found, for autoplay.");
+            if (!res || !res.data?.tracks || !res.data.tracks.length) throw new Error("Track not found, for autoplay.");
 
             const track: Track = res.data.tracks[
                 Math.floor(Math.random() * Math.floor(res.data.tracks.length))
             ];
 
             this.queue.add(track);
-            
+
             await this.play();
 
             return this;

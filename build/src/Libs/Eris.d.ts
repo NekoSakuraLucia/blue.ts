@@ -13,6 +13,11 @@ declare class Eris {
      * @param data - Data to be sent
      * @returns Returns a promise with the sent data
      */
-    send(data: any): any;
+    send(data: {
+        d: {
+            guild_id: string;
+        };
+        op: string;
+    }): any;
 }
 export default Eris;

@@ -13,6 +13,11 @@ declare class OceanicJs {
      * @param data - Data to send
      * @returns Promise<any>
      */
-    send(data: any): any;
+    send(data: {
+        d: {
+            guild_id: string;
+        };
+        op: string;
+    }): any;
 }
 export default OceanicJs;

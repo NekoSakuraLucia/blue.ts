@@ -82,12 +82,16 @@ class PlayerEvent {
      * Handle WebSocketClosed event
      */
     WebSocketClosedEvent(player, payload) {
-        [4015, 4009].includes(payload.code) && this.player.send({
-            guild_id: this.player.guildId,
-            channel_id: this.player.voiceChannel,
-            self_mute: this.player.options?.selfMute || false,
-            self_deaf: this.player.options?.selfDeaf || false,
-        });
+        if ([4015, 4009].includes(payload.code)) {
+            if (this.player.send) {
+                this.player.send({
+                    guild_id: this.player.guildId,
+                    channel_id: this.player.voiceChannel,
+                    self_mute: this.player.options?.selfMute || false,
+                    self_deaf: this.player.options?.selfDeaf || false,
+                });
+            }
+        }
         this.player.blue.emit(Events_1.default.playerDisconnect, player, payload);
     }
 }

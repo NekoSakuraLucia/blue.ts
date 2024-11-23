@@ -1,6 +1,13 @@
 import Events from "../Utils/Events";
 import { Blue } from "../Connectors/Node";
 import { Player } from "../Blue";
+import { ApiPacket } from "../Connectors/voiceStateUpdate";
+
+interface VoiceState {
+  id: string;
+  guild: { id: string }
+  channelId: string;
+}
 
 /**
  * DiscordJs class
@@ -17,7 +24,7 @@ class DiscordJs {
     /**
      * Listen for voice state updates
      */
-    this.blue.client.on(Events.voiceStateUpdate, async (oS: any, nS: any) => {
+    this.blue.client.on(Events.voiceStateUpdate, async (oS: VoiceState, nS: VoiceState) => {
       const player: Player | null = this.blue.players.get(oS.guild.id);
       if (nS.id === this.blue.client.user.id && nS.id === oS.id && oS?.channelId && nS?.channelId && oS?.channelId !== nS?.channelId) {
         if (player) {
@@ -32,7 +39,7 @@ class DiscordJs {
     /**
      * Listen for API events
      */
-    this.blue.client.on(Events.api, async (packet: any) => {
+    this.blue.client.on(Events.api, async (packet: ApiPacket) => {
       await this.blue.voiceState.updateVoice(packet);
     });
   }
@@ -42,7 +49,7 @@ class DiscordJs {
    * @param data - Data to be sent
    * @returns Returns a promise with the sent data
    */
-  public send(data: any): any {
+  public send(data: { d: { guild_id: string } }): any {
     try {
       if (!data) throw new Error("Parameter of 'send' must be present.");
       return new Promise(async (resolve, reject) => {

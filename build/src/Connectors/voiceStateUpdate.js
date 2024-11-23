@@ -50,6 +50,9 @@ class VoiceUpdate {
         this.muted = null;
         this.defeaned = null;
     }
+    isVoiceStateUpdate(data) {
+        return data.user_id !== undefined;
+    }
     /**
      * Update voice function
      * @param packet - Packet data
@@ -65,8 +68,10 @@ class VoiceUpdate {
             this.setVoiceStateUpdate(packet.d);
         }
         if (packet.t === "VOICE_STATE_UPDATE") {
-            if (packet.d.user_id !== this.blue.client.user.id)
-                return false;
+            if (this.isVoiceStateUpdate(packet.d)) {
+                if (packet.d.user_id !== this.blue.client.user.id)
+                    return false;
+            }
             this.setServerStateUpdate(packet.d);
         }
     }

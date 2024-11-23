@@ -10,26 +10,28 @@ declare class PlayerEvent {
     /**
      * Constructor
      */
-    constructor(player: any);
+    constructor(player: Player);
     /**
      * Handle TrackStart event
      */
-    TrackStartEvent(player: any, track: any, payload: any): unknown | void;
+    TrackStartEvent(player: Player, track: any, payload: any): unknown | void;
     /**
      * Handle TrackEnd event
      */
-    TrackEndEvent(player: any, track: any, payload: any): unknown | void | Player;
+    TrackEndEvent(player: Player, track: any, payload: any): unknown | void | Player;
     /**
      * Handle TrackStuck event
      */
-    TrackStuckEvent(player: any, track: any, payload: any): unknown | void;
+    TrackStuckEvent(player: Player, track: any, payload: any): unknown | void;
     /**
      * Handle TrackException event
      */
-    TrackExceptionEvent(player: any, track: any, payload: any): unknown | void;
+    TrackExceptionEvent(player: Player, track: any, payload: any): unknown | void;
     /**
      * Handle WebSocketClosed event
      */
-    WebSocketClosedEvent(player: any, payload: any): void;
+    WebSocketClosedEvent(player: Player, payload: {
+        code: number;
+    }): void;
 }
 export default PlayerEvent;

@@ -70,6 +70,12 @@ export interface NodeOptions {
     secure: boolean;
     password: string;
 }
+interface SendPayload {
+    guild_id: string | null;
+    channel_id: string | null;
+    self_mute: boolean;
+    self_deaf: boolean;
+}
 /**
 * player class structure
 */
@@ -99,6 +105,9 @@ export interface Player {
     destroy?: () => any;
     setVoiceChannel?: (...args: any) => any;
     reconnect?: () => Promise<any>;
+    autoplay?: () => void;
+    play?: () => void;
+    send: (data: SendPayload) => void;
 }
 /**
 * extended NodeManager class and exported as an interface
@@ -333,7 +342,11 @@ declare class Blue extends EventEmitter {
     * @param - node,
     * @returns either error or boolean statement
    */
-    removeNode(option: any): boolean | Error;
+    removeNode(option: {
+        host: string;
+        port: number;
+        password: string;
+    }): boolean | Error;
     /**
     * Updates a node,
     * @param - node,

@@ -13,6 +13,10 @@ declare class DiscordJs {
      * @param data - Data to be sent
      * @returns Returns a promise with the sent data
      */
-    send(data: any): any;
+    send(data: {
+        d: {
+            guild_id: string;
+        };
+    }): any;
 }
 export default DiscordJs;

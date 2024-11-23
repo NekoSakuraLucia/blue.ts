@@ -88,6 +88,12 @@ export interface NodeOptions {
   password: string;
 }
 
+interface SendPayload {
+  guild_id: string | null;
+  channel_id: string | null;
+  self_mute: boolean;
+  self_deaf: boolean;
+}
  /** 
  * player class structure
 */
@@ -117,6 +123,9 @@ export interface Player {
     destroy?: () => any;
     setVoiceChannel?: (...args: any) => any;
     reconnect?: () => Promise<any>;
+    autoplay?: () => void;
+    play?: () => void;
+    send: (data: SendPayload) => void;
 }
 
  /**
@@ -474,15 +483,15 @@ class Blue extends EventEmitter {
  * @param - node,
  * @returns either error or boolean statement
 */
-  public removeNode(option: any): boolean | Error {
-    if (!option["host" && "port" && "password"]) {
+  public removeNode(option: { host: string; port: number; password: string; }): boolean | Error {
+    if (!option.host || !option.port || !option.password) {
       throw new Error("Provide valid node to remove");
     }
     this._nodes = this._nodes.filter(n => [...this.activeNodes()].map(d => d.host).includes(n.host));
-    const node = this.nodes.get(option["host"]);
+    const node = this.nodes.get(option.host);
     if(node) {
       node.disconnect();
-      return this.nodes.delete(option["host"]);
+      return this.nodes.delete(option.host);
     } else return false;
   }
 

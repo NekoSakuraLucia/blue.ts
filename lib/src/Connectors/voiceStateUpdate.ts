@@ -14,6 +14,28 @@ interface GuildOptions {
   self_deaf: boolean;
 }
 
+interface VoiceStateUpdate {
+  user_id: string;
+  guild_id: string;
+  channel_id: string;
+  session_id: string;
+  deaf: boolean;
+  mute: boolean;
+  self_deaf: boolean;
+  self_mute: boolean;
+}
+
+interface VoiceServerUpdate {
+  guild_id: string;
+  endpoint: string;
+  token: string;
+}
+
+export interface ApiPacket {
+  t: string;
+  d: VoiceStateUpdate | VoiceServerUpdate;
+}
+
 /**
  * Voice update class
  */
@@ -70,21 +92,27 @@ class VoiceUpdate {
     this.defeaned = null;
   }
 
+  private isVoiceStateUpdate(data: VoiceStateUpdate | VoiceServerUpdate): data is VoiceStateUpdate {
+    return (data as VoiceStateUpdate).user_id !== undefined;
+  }
+
   /**
    * Update voice function
    * @param packet - Packet data
    * @returns Returns true if successful, otherwise false
    */
-  public async updateVoice(packet: any): Promise<boolean | void> {
+  public async updateVoice(packet: ApiPacket): Promise<boolean | void> {
     if (!("t" in packet) || !["VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"].includes(packet.t)) return false;
     const player = this.blue.players.get(packet.d.guild_id);
     if (!player) return;
     if (packet.t === "VOICE_SERVER_UPDATE") {
-      this.setVoiceStateUpdate(packet.d);
+      this.setVoiceStateUpdate(packet.d as VoiceServerUpdate);
     }
     if (packet.t === "VOICE_STATE_UPDATE") {
-      if (packet.d.user_id !== this.blue.client.user.id) return false;
-      this.setServerStateUpdate(packet.d);
+      if (this.isVoiceStateUpdate(packet.d)) {
+        if (packet.d.user_id !== this.blue.client.user.id) return false;
+      }
+      this.setServerStateUpdate(packet.d as VoiceStateUpdate);
     }
   }
 

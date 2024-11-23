@@ -4,6 +4,7 @@ import Filters from "./FilterManager";
 import Track from "../Structure/Track";
 import { Blue } from "../Connectors/Node";
 import { Player as PlayerOption, VoiceConnection } from "../Blue";
+import { KaraokeSettings, DistortionSettings, RotationSettings, TimeScaler, BandConfiguration, VibratoSettings, LowPassFilter, ChannelMixer, TremoloSettings } from "./FilterManager";
 /**
  * Player Options interface
  */
@@ -26,15 +27,15 @@ interface BlueStruct extends Blue {
 export interface Filter extends Filters {
     player: PlayerOption;
     volume: number;
-    equalizer: any[];
-    karaoke: any;
-    tremolo: any;
-    vibrato: any;
-    rotation: any;
-    distortion: any;
-    channelMix: any;
-    lowPass: any;
-    timeScaler: any;
+    equalizer: BandConfiguration[];
+    karaoke: KaraokeSettings | null;
+    tremolo: TremoloSettings | null;
+    vibrato: VibratoSettings | null;
+    rotation: RotationSettings | null;
+    distortion: DistortionSettings | null;
+    channelMix: ChannelMixer | null;
+    lowPass: LowPassFilter | null;
+    timeScaler: TimeScaler | null;
 }
 /**
  * Loop type

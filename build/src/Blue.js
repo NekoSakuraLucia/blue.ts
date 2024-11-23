@@ -277,7 +277,7 @@ class Blue extends node_events_1.EventEmitter {
     * @returns either error or boolean statement
    */
     removeNode(option) {
-        if (!option["host" && "port" && "password"]) {
+        if (!option.host || !option.port || !option.password) {
             throw new Error("Provide valid node to remove");
         }
         this._nodes = this._nodes.filter(n => [...this.activeNodes()].map(d => d.host).includes(n.host));

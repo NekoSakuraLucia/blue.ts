@@ -1,5 +1,6 @@
 import Events from "../Utils/Events";
 import { Blue } from "../Connectors/Node";
+import { ApiPacket } from "../Connectors/voiceStateUpdate";
 
 /**
  * OceanicJs class
@@ -12,7 +13,7 @@ class OceanicJs {
 
   constructor(blue: Blue) {
     this.blue = blue;
-    this.blue.client.on("packet", async (packet: any) => {
+    this.blue.client.on("packet", async (packet: ApiPacket) => {
       await this.blue.voiceState.updateVoice(packet);
     });
   }
@@ -22,7 +23,7 @@ class OceanicJs {
    * @param data - Data to send
    * @returns Promise<any>
    */
-  public send(data: any): any {
+  public send(data: { d: { guild_id: string }; op: string }): any {
     try {
       if (!data) throw new Error("Parameter of 'send' must be present.")
       return new Promise((resolve, reject) => {

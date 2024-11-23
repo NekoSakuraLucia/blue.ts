@@ -6,13 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Library = exports.Types = exports.Events = exports.Util = exports.Node = exports.Blue = void 0;
 /*
 =======================================================================================================
-This file is part of Rapture, a comprehensive music bot framework.
+Blue.ts, a comprehensive music bot framework.
 
-Rapture is an open-source project licensed under the MIT License.
+blue.ts is an open-source project licensed under the MIT License.
 - GitHub Repository: https://github.com/ftrapture/blue.ts
 
 Description:
-- This file exports various modules of the Rapture framework.
+- This file exports various modules of the blue.ts framework.
 - Modules include Blue, Node, Util, Events, ObjFactory, Types, and Library.
 
 Author: Rapture

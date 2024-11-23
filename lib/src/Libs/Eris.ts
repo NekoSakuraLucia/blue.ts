@@ -1,5 +1,6 @@
 import Events from "../Utils/Events";
 import { Blue } from "../Connectors/Node";
+import { ApiPacket } from "../Connectors/voiceStateUpdate";
 
 /**
  * Eris class
@@ -16,7 +17,7 @@ class Eris {
     /**
      * Listen for raw WS events
      */
-    this.blue.client.on("rawWS", async (packet: any) => {
+    this.blue.client.on("rawWS", async (packet: ApiPacket) => {
       await this.blue.voiceState.updateVoice(packet);
     });
   }
@@ -26,7 +27,7 @@ class Eris {
    * @param data - Data to be sent
    * @returns Returns a promise with the sent data
    */
-  public send(data: any): any {
+  public send(data: { d: { guild_id: string }; op: string; }): any {
     try {
       if (!data) throw new Error("Parameter of 'send' must be present.");
       return new Promise((resolve, reject) => {

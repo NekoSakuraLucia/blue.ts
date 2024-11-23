@@ -2,14 +2,14 @@ import { Player } from "../Blue";
 /**
  * Configuration for each band in the equalizer
  */
-interface BandConfiguration {
+export interface BandConfiguration {
     band: number;
     gain: number;
 }
 /**
  * Settings for karaoke effect
  */
-interface KaraokeSettings {
+export interface KaraokeSettings {
     level: number;
     monoLevel: number;
     filter: BandConfiguration;
@@ -18,7 +18,7 @@ interface KaraokeSettings {
 /**
  * Settings for time scaling
  */
-interface TimeScaler {
+export interface TimeScaler {
     speed?: number;
     pitch?: number;
     rate?: number;
@@ -26,27 +26,27 @@ interface TimeScaler {
 /**
  * Settings for tremolo effect
  */
-interface TremoloSettings {
+export interface TremoloSettings {
     frequency: number;
     depth: number;
 }
 /**
  * Settings for vibrato effect
  */
-interface VibratoSettings {
+export interface VibratoSettings {
     frequency: number;
     depth: number;
 }
 /**
  * Settings for rotation effect
  */
-interface RotationSettings {
+export interface RotationSettings {
     rotationHz: number;
 }
 /**
  * Settings for distortion effect
  */
-interface DistortionSettings {
+export interface DistortionSettings {
     sinOffset?: number;
     sinScale?: number;
     cosOffset?: number;
@@ -59,7 +59,7 @@ interface DistortionSettings {
 /**
  * Mixer settings for channel
  */
-interface ChannelMixer {
+export interface ChannelMixer {
     leftToLeft?: number;
     leftToRight?: number;
     rightToLeft?: number;
@@ -68,7 +68,7 @@ interface ChannelMixer {
 /**
  * Low pass filter settings
  */
-interface LowPassFilter {
+export interface LowPassFilter {
     smoothing: number;
 }
 /**

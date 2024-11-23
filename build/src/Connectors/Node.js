@@ -196,7 +196,6 @@ class Node {
                 this.sessionId = packet.sessionId;
                 this.blue.emit(Events_1.default.api, `[${String("DEBUG").Blue()}]: ${this.info.host} ---> [${String("RECEIVED: READY PAYLOAD").Green()}] ---> ${String(`${JSON.stringify(packet)}`).Yellow()}`);
                 this.rest.setSession(this.sessionId || "none");
-                console.log(this.blue.players);
                 this.autoResume && this.blue.players.forEach((player) => {
                     try {
                         if (player.blue.node === this && player.connected && player.queue.current) {
