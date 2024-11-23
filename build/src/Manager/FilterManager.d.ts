@@ -133,7 +133,7 @@ declare class FilterManager {
     /**
      * Time scaler settings
      */
-    timeScaler: TimeScaler;
+    timescale: TimeScaler;
     /**
      * Vaporwave effect status
      */
@@ -150,7 +150,7 @@ declare class FilterManager {
      * Nightcore effect status
      */
     nightcore: boolean;
-    constructor(player: any, options?: FilterOptions);
+    constructor(player: Player, options?: FilterOptions);
     /**
      * Set equalizer bands
      * @param bands - Array of BandConfiguration

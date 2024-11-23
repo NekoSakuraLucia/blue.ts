@@ -50,7 +50,7 @@ export interface Filter extends Filters {
     distortion: DistortionSettings | null;
     channelMix: ChannelMixer | null;
     lowPass: LowPassFilter | null;
-    timeScaler: TimeScaler | null;
+    timescale: TimeScaler | null;
 }
 
 /**

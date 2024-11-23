@@ -281,10 +281,10 @@ class Blue extends node_events_1.EventEmitter {
             throw new Error("Provide valid node to remove");
         }
         this._nodes = this._nodes.filter(n => [...this.activeNodes()].map(d => d.host).includes(n.host));
-        const node = this.nodes.get(option["host"]);
+        const node = this.nodes.get(option.host);
         if (node) {
             node.disconnect();
-            return this.nodes.delete(option["host"]);
+            return this.nodes.delete(option.host);
         }
         else
             return false;

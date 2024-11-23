@@ -154,7 +154,7 @@ class FilterManager {
     /**
      * Time scaler settings
      */
-    public timeScaler: TimeScaler;
+    public timescale: TimeScaler;
 
     /**
      * Vaporwave effect status
@@ -175,8 +175,8 @@ class FilterManager {
      * Nightcore effect status
      */
     public nightcore: boolean;
-    
-    constructor(player: any, options?: FilterOptions) {
+
+    constructor(player: Player, options?: FilterOptions) {
         this.player = player;
         this.volume = 1.0;
         this.vaporwave = false;
@@ -185,7 +185,7 @@ class FilterManager {
         this.is8D = false;
         this.bassboost = 0;
         this.karaoke = options?.karaoke || null;
-        this.timeScaler = options?.timeScaler || null;
+        this.timescale = options?.timeScaler || null;
         this.tremolo = options?.tremolo || null;
         this.vibrato = options?.vibrato || null;
         this.rotation = options?.rotation || null;
@@ -222,7 +222,7 @@ class FilterManager {
      * @returns FilterManager instance
      */
     public setTimeScaler(scaler?: TimeScaler): FilterManager {
-        this.timeScaler = scaler || null;
+        this.timescale = scaler || null;
         this.updateFilters();
         return this;
     }
@@ -251,7 +251,7 @@ class FilterManager {
         if (val) {
             this.vaporwave = false;
         }
-        return val;
+        return this.nightcore;
     }
 
     /**
@@ -260,7 +260,7 @@ class FilterManager {
      * @returns FilterManager instance
      */
     public setTimescale(timescale?: TimeScaler): FilterManager {
-        this.timeScaler = timescale || null;
+        this.timescale = timescale || null;
         this.updateFilters();
         return this;
     }
@@ -343,7 +343,7 @@ class FilterManager {
         this.is8D = false;
         this.bassboost = 0;
         this.karaoke = null;
-        this.timeScaler = null;
+        this.timescale = null;
         this.tremolo = null;
         this.vibrato = null;
         this.rotation = null;
@@ -361,16 +361,23 @@ class FilterManager {
         if (!this.player || !this.player.blue || !this.player.blue.node || !this.player.blue.node.rest || !this.player.guildId) {
             throw new Error("Player or its properties are not properly initialized.");
         }
-    
-        const { volume, equalizer, karaoke, timeScaler, tremolo, vibrato, rotation, distortion, channelMix, lowPass } = this;
-    
+
+        const filters: Record<string, any> = {
+            volume: this.volume,
+            equalizer: this.equalizer.length > 0 ? this.equalizer : undefined,
+            karaoke: this.karaoke || undefined,
+            timescale: this.timescale || undefined,
+            tremolo: this.tremolo || undefined,
+            vibrato: this.vibrato || undefined,
+            rotation: this.rotation || undefined,
+            distortion: this.distortion || undefined,
+            channelMix: this.channelMix || undefined,
+            lowPass: this.lowPass || undefined,
+        };
+        Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]); // ลบค่าที่เป็น undefined
         this.player.blue.node.rest.updatePlayer({
             guildId: this.player.guildId,
-            data: {
-                filters: {
-                    volume, equalizer, karaoke, timeScaler, tremolo, vibrato, rotation, distortion, channelMix, lowPass,
-                }
-            }
+            data: { filters },
         });
     }
 }
