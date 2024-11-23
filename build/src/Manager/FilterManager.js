@@ -130,11 +130,37 @@ class FilterManager {
         if (!this.player)
             return;
         this.nightcore = val;
-        this.setTimescale(val ? { rate: 1.5 } : null);
+        this.setTimescale(val ? { speed: 1.2, pitch: 1.2, rate: 1 } : null);
         if (val) {
             this.vaporwave = false;
         }
         return this.nightcore;
+    }
+    /**
+     * Set BassBoost effect
+     * @param val - BassBoost status
+     * @returns BassBoost status
+     */
+    setBassBoost(val) {
+        if (!this.player)
+            return;
+        this.bassboost = val ? 1 : 0;
+        if (val) {
+            this.setEqualizer([
+                { band: 0, gain: 0.8 }, // 60Hz - เพิ่มเบสเล็กน้อย (Add a little bass)
+                { band: 1, gain: 0.5 }, // 150Hz - เพิ่มเบสเล็กน้อย (Add a little bass)
+                { band: 2, gain: 0.2 }, // 400Hz - เพิ่มเบสเล็กน้อย (Add a little bass)
+                { band: 3, gain: 0.0 }, // 1kHz (ไม่เพิ่ม) (no increase)
+                { band: 4, gain: 0.0 }, // 2.4kHz (ไม่เพิ่ม) (no increase)
+                { band: 5, gain: 0.0 }, // 6kHz (ไม่เพิ่ม) (no increase)
+                { band: 6, gain: 0.0 }, // 12kHz (ไม่เพิ่ม) (no increase)
+                { band: 7, gain: 0.0 }, // 14kHz (ไม่เพิ่ม) (no increase)
+            ]);
+        }
+        else {
+            this.setEqualizer([]);
+        }
+        return this.bassboost;
     }
     /**
      * Set time scale settings

@@ -182,6 +182,12 @@ declare class FilterManager {
      */
     setNightcore(val: boolean): boolean;
     /**
+     * Set BassBoost effect
+     * @param val - BassBoost status
+     * @returns BassBoost status
+     */
+    setBassBoost(val: boolean): number;
+    /**
      * Set time scale settings
      * @param timescale - TimeScaler
      * @returns FilterManager instance
